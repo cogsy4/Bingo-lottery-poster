@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barlows Bingo — Last Chance Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: 'Nunito', sans-serif; gap: 16px; }
+  .print-btn { background: #f5c842; color: #000; border: none; border-radius: 30px; padding: 10px 28px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem; cursor: pointer; }
+
+  .poster {
+    width: 100%;
+    max-width: 580px;
+    background: #0a0a0f;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(255,0,110,0.4), 0 0 40px rgba(245,200,66,0.2);
+    position: relative;
+  }
+
+  /* Animated top stripe */
+  .top-stripe {
+    height: 8px;
+    background: linear-gradient(90deg, #ff006e, #ffbe0b, #2ecc71, #3a86ff, #ff006e);
+    background-size: 300% 100%;
+    animation: stripe 2s linear infinite;
+  }
+  @keyframes stripe { 0%{background-position:0%} 100%{background-position:300%} }
+
+  /* URGENT BANNER */
+  .urgent-banner {
+    background: #ff006e;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .urgent-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
+  }
+  .urgent-text {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(1.8rem, 7vw, 3rem);
+    color: #fff;
+    letter-spacing: 4px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes pulse { from{transform:scale(1)} to{transform:scale(1.03)} }
+  .urgent-sub {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(1rem, 4vw, 1.6rem);
+    color: #fff;
+    letter-spacing: 6px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+    margin-top: 2px;
+  }
+
+  /* Main content */
+  .main { padding: 20px 22px; }
+
+  /* Title */
+  .title-section { text-align: center; margin-bottom: 18px; }
+  .title-pre { font-size: 0.8rem; font-weight: 900; letter-spacing: 5px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 4px; }
+  .title-main {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(2.5rem, 10vw, 4.5rem);
+    color: #f5c842;
+    letter-spacing: 4px;
+    line-height: 0.9;
+    text-shadow: 3px 3px 0 #ff006e;
+  }
+  .title-sub {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(1rem, 4vw, 1.6rem);
+    color: #fff;
+    letter-spacing: 5px;
+    margin-top: 4px;
+  }
+
+  /* Balls */
+  .balls-row { display: flex; justify-content: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+  .ball {
+    width: clamp(40px,9vw,55px); height: clamp(40px,9vw,55px);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+    color: #fff;
+    box-shadow: inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 5px rgba(255,255,255,0.2), 0 4px 15px rgba(0,0,0,0.4);
+    animation: bounce 2s ease-in-out infinite;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ball::after { content:''; position:absolute; top:18%; left:22%; width:28%; height:18%; background:rgba(255,255,255,0.35); border-radius:50%; transform:rotate(-30deg); }
+  .ball:nth-child(1){background:radial-gradient(circle at 35% 35%,#ff6b6b,#ff006e);animation-delay:0s}
+  .ball:nth-child(2){background:radial-gradient(circle at 35% 35%,#ffa94d,#fb5607);animation-delay:0.15s}
+  .ball:nth-child(3){background:radial-gradient(circle at 35% 35%,#ffe066,#e6a800);animation-delay:0.3s}
+  .ball:nth-child(4){background:radial-gradient(circle at 35% 35%,#69db7c,#2f9e44);animation-delay:0.45s}
+  .ball:nth-child(5){background:radial-gradient(circle at 35% 35%,#74c0fc,#3a86ff);animation-delay:0.6s}
+  .ball:nth-child(6){background:radial-gradient(circle at 35% 35%,#cc5de8,#8338ec);animation-delay:0.75s}
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  /* KEY MESSAGE BOX */
+  .key-msg {
+    background: linear-gradient(135deg, #1a0a00, #0d0d1a);
+    border: 3px solid #f5c842;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .key-msg::before {
+    content: '⭐';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.04;
+    top: -10px; right: -10px;
+  }
+  .key-msg-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(1.1rem, 4vw, 1.8rem);
+    color: #f5c842;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  .key-msg-text {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.4;
+  }
+  .key-msg-text span { color: #f5c842; font-size: 1.4em; }
+  .key-msg-sub { font-size: 0.78rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 6px; }
+
+  /* Ticks list */
+  .ticks { margin-bottom: 16px; }
+  .tick-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+    font-weight: 800;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.3;
+  }
+  .tick { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+  .tick-item strong { color: #f5c842; }
+
+  /* Info grid */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .info-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 10px; text-align: center; }
+  .info-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+  .info-title { font-family: 'Bangers', cursive; font-size: 0.9rem; letter-spacing: 1px; color: #f5c842; margin-bottom: 3px; }
+  .info-text { font-size: 0.72rem; color: rgba(255,255,255,0.7); font-weight: 700; line-height: 1.4; }
+  .info-text strong { color: #fff; }
+
+  /* Payment / QR section */
+  .payment-section {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .qr-wrap { background: #fff; padding: 7px; border-radius: 8px; flex-shrink: 0; }
+  .payment-details { flex: 1; }
+  .pay-title { font-family: 'Bangers', cursive; font-size: 1rem; letter-spacing: 2px; color: #f5c842; margin-bottom: 6px; }
+  .pay-line { font-size: 0.75rem; color: rgba(255,255,255,0.8); font-weight: 700; line-height: 1.8; }
+  .pay-line strong { color: #fff; }
+
+  /* Footer */
+  .footer { background: linear-gradient(90deg, #ff006e, #8338ec); padding: 12px; text-align: center; }
+  .footer-main { font-family: 'Bangers', cursive; font-size: clamp(1rem,4vw,1.5rem); letter-spacing: 3px; color: #fff; }
+  .footer-sub { font-size: 0.7rem; color: rgba(255,255,255,0.7); font-weight: 700; margin-top: 3px; }
+
+  /* Deadline badge */
+  .deadline-badge {
+    background: linear-gradient(135deg, #ff006e, #fb5607);
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .deadline-time {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    color: #fff;
+    letter-spacing: 4px;
+    line-height: 1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  .deadline-label { font-size: 0.78rem; font-weight: 900; color: rgba(255,255,255,0.8); letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .print-btn { display: none; }
+    .poster { box-shadow: none; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print Poster</button>
+
+<div class="poster">
+  <div class="top-stripe"></div>
+
+  <!-- URGENT BANNER -->
+  <div class="urgent-banner">
+    <div class="urgent-text">⚡ LAST CHANCE TO ENTER! ⚡</div>
+    <div class="urgent-sub">ENTRIES CLOSING SOON!</div>
+  </div>
+
+  <div class="main">
+
+    <!-- Title -->
+    <div class="title-section">
+      <div class="title-pre">📍 At Barlows</div>
+      <div class="title-main">BINGO<br>LOTTERY</div>
+      <div class="title-sub">🎱 Lottery Bingo 🎱</div>
+    </div>
+
+    <!-- Balls -->
+    <div class="balls-row">
+      <div class="ball">7</div>
+      <div class="ball">14</div>
+      <div class="ball">23</div>
+      <div class="ball">38</div>
+      <div class="ball">45</div>
+      <div class="ball">59</div>
+    </div>
+
+    <!-- Deadline -->
+    <div class="deadline-badge">
+      <div class="deadline-time">⏰ 7:30PM</div>
+      <div class="deadline-label">Entry Deadline — Don't Miss Out!</div>
+    </div>
+
+    <!-- KEY MESSAGE -->
+    <div class="key-msg">
+      <div class="key-msg-title">💰 ONLY PAY ONCE!</div>
+      <div class="key-msg-text">Just <span>£2.50</span> for the WHOLE competition!</div>
+      <div class="key-msg-sub">Your numbers stay in EVERY draw until someone wins — no weekly fees!</div>
+    </div>
+
+    <!-- Tick list -->
+    <div class="ticks">
+      <div class="tick-item"><div class="tick">✅</div><div>Pick <strong>6 lucky numbers</strong> from 1–59</div></div>
+      <div class="tick-item"><div class="tick">✅</div><div>Numbers matched every <strong>Wednesday & Saturday</strong> Lotto draw</div></div>
+      <div class="tick-item"><div class="tick">✅</div><div><strong>First to match all 6</strong> wins 50% of the pot!</div></div>
+      <div class="tick-item"><div class="tick">✅</div><div>The <strong>more entries</strong> — the <strong>bigger the prize!</strong></div></div>
+      <div class="tick-item"><div class="tick">❤️</div><div><strong>50%</strong> goes towards a life-saving <strong>defibrillator</strong></div></div>
+    </div>
+
+    <!-- Info grid -->
+    <div class="info-grid">
+      <div class="info-box">
+        <span class="info-icon">💰</span>
+        <div class="info-title">Entry Fee</div>
+        <div class="info-text"><strong style="font-size:1.3rem;color:#f5c842">£2.50</strong><br>ONE payment<br>for the whole game!</div>
+      </div>
+      <div class="info-box">
+        <span class="info-icon">📞</span>
+        <div class="info-title">Contact Roy</div>
+        <div class="info-text"><strong style="color:#f5c842">07930 805994</strong><br>Call or WhatsApp<br>to enter now!</div>
+      </div>
+    </div>
+
+    <!-- Payment & QR -->
+    <div class="payment-section">
+      <div class="qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://cogsy4.github.io/BINGO-LOTTERY" width="90" height="90" alt="QR" />
+      </div>
+      <div class="payment-details">
+        <div class="pay-title">💳 HOW TO PAY</div>
+        <div class="pay-line"><strong>Bank:</strong> Chase Saver — Roy Caldwell</div>
+        <div class="pay-line"><strong>Sort:</strong> 60-84-07 | <strong>Acc:</strong> 99751443</div>
+        <div class="pay-line"><strong>Cash</strong> accepted by 7:30pm</div>
+        <div class="pay-line" style="margin-top:6px;color:#f5c842">📱 Scan to enter online!</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-main">🎱 Good Luck Everyone! 🎱</div>
+    <div class="footer-sub">Entries close 7:30pm before each draw · Organiser's decision is final · cogsy4.github.io/BINGO-LOTTERY</div>
+  </div>
+
+</div>
+
+</body>
+</html>
