@@ -1,0 +1,2 @@
+# Bingo-lottery-poster
+Advert
