@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barlows Bingo Advert</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    padding: 20px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .ctrl-btn.play { background: #f5c842; color: #000; }
+  .ctrl-btn.restart { background: #3a86ff; color: #fff; }
+
+  /* Advert screen — 9:16 portrait like a phone video */
+  .advert {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 9/16;
+    background: #0d0d1a;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 60px rgba(245,200,66,0.3);
+  }
+
+  /* Each scene */
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 24px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+
+  .scene.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: all;
+  }
+
+  /* Scene 1 — Hook */
+  .s1 { background: radial-gradient(circle at 50% 40%, #1a0a2e, #0d0d1a); overflow: hidden; }
+  .s1-balls-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-ball {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bangers', cursive;
+    color: #fff;
+    font-weight: 900;
+    box-shadow: inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,255,0.2);
+    opacity: 0.7;
+  }
+  .bg-ball::after {
+    content: '';
+    position: absolute;
+    top: 15%; left: 20%;
+    width: 28%; height: 18%;
+    background: rgba(255,255,255,0.35);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+  }
+  .s1-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .s1-question {
+    font-family: 'Bangers', cursive;
+    font-size: 2.8rem;
+    color: #fff;
+    text-align: center;
+    line-height: 1.1;
+    letter-spacing: 2px;
+    animation: s1pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .s1-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    margin-top: 12px;
+    font-weight: 700;
+    animation: fadeUp 0.5s 0.4s ease both;
+  }
+  .s1-emoji {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    animation: wobble 1s ease infinite;
+  }
+
+  /* Scene 2 — Intro */
+  .s2 { background: linear-gradient(160deg, #ff006e22, #0d0d1a, #3a86ff22); }
+  .s2-title {
+    font-family: 'Bangers', cursive;
+    font-size: 3.5rem;
+    color: #f5c842;
+    text-align: center;
+    letter-spacing: 4px;
+    line-height: 0.9;
+    text-shadow: 4px 4px 0 #ff006e;
+    animation: s1pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .s2-sub {
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: 5px;
+    margin-top: 8px;
+    animation: fadeUp 0.5s 0.3s ease both;
+  }
+  .balls-anim {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .aball {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    color: #fff;
+    box-shadow: inset -2px -2px 6px rgba(0,0,0,0.4);
+    animation: ballDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    position: relative;
+  }
+  .aball::after { content:''; position:absolute; top:20%;left:22%;width:28%;height:18%;background:rgba(255,255,255,0.35);border-radius:50%;transform:rotate(-30deg); }
+  .aball:nth-child(1){background:radial-gradient(circle at 35% 35%,#ff6b6b,#ff006e);animation-delay:0.1s}
+  .aball:nth-child(2){background:radial-gradient(circle at 35% 35%,#ffa94d,#fb5607);animation-delay:0.2s}
+  .aball:nth-child(3){background:radial-gradient(circle at 35% 35%,#ffe066,#e6a800);animation-delay:0.3s}
+  .aball:nth-child(4){background:radial-gradient(circle at 35% 35%,#69db7c,#2f9e44);animation-delay:0.4s}
+  .aball:nth-child(5){background:radial-gradient(circle at 35% 35%,#74c0fc,#3a86ff);animation-delay:0.5s}
+  .aball:nth-child(6){background:radial-gradient(circle at 35% 35%,#cc5de8,#8338ec);animation-delay:0.6s}
+
+  /* Scene 3 — How it works */
+  .s3 { background: #0d0d1a; align-items: flex-start; padding: 40px 24px; }
+  .s3-title {
+    font-family: 'Bangers', cursive;
+    font-size: 1.8rem;
+    color: #f5c842;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+    align-self: center;
+    animation: fadeUp 0.4s ease both;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    animation: slideIn 0.4s ease both;
+  }
+  .step-item:nth-child(2){animation-delay:0.1s}
+  .step-item:nth-child(3){animation-delay:0.2s}
+  .step-item:nth-child(4){animation-delay:0.3s}
+  .step-item:nth-child(5){animation-delay:0.4s}
+  .step-circle {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5c842, #c9972a);
+    color: #000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 0.95rem; color: #fff; font-weight: 700; line-height: 1.3; }
+  .step-text span { color: #f5c842; }
+
+  /* Scene 4 — Prize */
+  .s4 { background: radial-gradient(circle at 50% 50%, #1a0a00, #0d0d1a); }
+  .s4-label {
+    font-family: 'Bangers', cursive;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 8px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .s4-prize {
+    font-family: 'Bangers', cursive;
+    font-size: 5rem;
+    color: #f5c842;
+    text-shadow: 0 0 40px rgba(245,200,66,0.8), 4px 4px 0 #c9972a;
+    letter-spacing: 2px;
+    animation: s1pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+    line-height: 1;
+  }
+  .s4-sub {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 700;
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.4;
+    animation: fadeUp 0.4s 0.4s ease both;
+  }
+  .s4-charity {
+    margin-top: 16px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 700;
+    text-align: center;
+    animation: fadeUp 0.4s 0.5s ease both;
+  }
+  .s4-charity span { color: #f5c842; }
+  .coins {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    animation: spin 0.8s ease both;
+  }
+
+  /* Scene 5 — CTA */
+  .s5 { background: linear-gradient(160deg, #ff006e33, #0d0d1a 40%, #3a86ff22); }
+  .s5-title {
+    font-family: 'Bangers', cursive;
+    font-size: 3rem;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 3px;
+    line-height: 1;
+    text-shadow: 3px 3px 0 #ff006e;
+    animation: s1pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .s5-price {
+    font-family: 'Bangers', cursive;
+    font-size: 2.5rem;
+    color: #f5c842;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    animation: fadeUp 0.4s 0.2s ease both;
+  }
+  .s5-url {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #f5c842;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #f5c842;
+    font-weight: 900;
+    margin-top: 14px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    animation: fadeUp 0.4s 0.4s ease both;
+    word-break: break-all;
+  }
+  .s5-qr {
+    background: #fff;
+    padding: 8px;
+    border-radius: 10px;
+    margin-top: 14px;
+    animation: fadeUp 0.4s 0.5s ease both;
+  }
+  .s5-scan {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 700;
+    margin-top: 6px;
+    animation: fadeUp 0.4s 0.6s ease both;
+  }
+  .s5-date {
+    font-family: 'Bangers', cursive;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-top: 10px;
+    animation: fadeUp 0.4s 0.7s ease both;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff006e, #ffbe0b, #3a86ff);
+    width: 0%;
+    transition: width linear;
+    z-index: 10;
+  }
+
+  /* Scene indicators */
+  .scene-dots {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+  }
+  .sdot {
+    width: 6px; height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.3s;
+  }
+  .sdot.active { background: #f5c842; height: 16px; }
+
+  /* Keyframes */
+  /* Scene 6 — Leaderboard */
+  .s6 { background: #0d0d1a; align-items: flex-start; padding: 30px 20px; }
+  .s6-title {
+    font-family: 'Bangers', cursive;
+    font-size: 1.8rem;
+    color: #f5c842;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+    align-self: center;
+    animation: fadeUp 0.4s ease both;
+    text-align: center;
+    width: 100%;
+  }
+  .s6-sub {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.4);
+    font-weight: 700;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 14px;
+    animation: fadeUp 0.4s 0.1s ease both;
+    letter-spacing: 1px;
+  }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    animation: slideIn 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .lb-row::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+  }
+  .lb-row:nth-child(3){animation-delay:0.05s}
+  .lb-row:nth-child(4){animation-delay:0.1s}
+  .lb-row:nth-child(5){animation-delay:0.15s}
+  .lb-row:nth-child(6){animation-delay:0.2s}
+  .lb-row:nth-child(7){animation-delay:0.25s}
+  .lb-row:nth-child(8){animation-delay:0.3s}
+  .lb-row:nth-child(9){animation-delay:0.35s}
+  .lb-row:nth-child(10){animation-delay:0.4s}
+  .lb-row:nth-child(11){animation-delay:0.45s}
+  .lb-row:nth-child(12){animation-delay:0.5s}
+  .lb-rank {
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    min-width: 28px;
+    text-align: center;
+  }
+  .lb-name { flex: 1; font-size: 0.82rem; font-weight: 800; color: #fff; }
+  .lb-progress { flex: 1; }
+  .lb-bar-wrap { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+  .lb-bar { height: 100%; background: linear-gradient(90deg, #2ecc71, #f5c842); border-radius: 3px; }
+  .lb-score { font-size: 0.75rem; font-weight: 900; color: rgba(255,255,255,0.6); min-width: 28px; text-align: right; }
+  .lb-loading { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; font-weight: 700; padding: 20px; width: 100%; }
+
+  /* Scene 7 — Countdown */
+  .s7 { background: radial-gradient(circle at 50% 40%, #1a0a2e, #0d0d1a); }
+  .s7-title {
+    font-family: 'Bangers', cursive;
+    font-size: 1.6rem;
+    letter-spacing: 4px;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 6px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .s7-sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    animation: fadeUp 0.4s 0.1s ease both;
+  }
+  .s7-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .s7-box {
+    background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
+    border: 2px solid rgba(245,200,66,0.4);
+    border-radius: 14px;
+    padding: 14px 8px;
+    text-align: center;
+    animation: s1pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    position: relative;
+    overflow: hidden;
+  }
+  .s7-box::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background: rgba(245,200,66,0.15);
+  }
+  .s7-box:nth-child(1){animation-delay:0.1s}
+  .s7-box:nth-child(2){animation-delay:0.2s}
+  .s7-box:nth-child(3){animation-delay:0.3s}
+  .s7-box:nth-child(4){animation-delay:0.4s}
+  .s7-num {
+    font-family: 'Bangers', cursive;
+    font-size: 3.5rem;
+    color: #f5c842;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(245,200,66,0.6);
+    display: block;
+  }
+  .s7-label {
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    display: block;
+    margin-top: 4px;
+  }
+  .s7-date {
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    color: #fff;
+    text-align: center;
+    animation: fadeUp 0.4s 0.5s ease both;
+  }
+  .s7-fire {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    animation: wobble 1s ease infinite;
+  }
+
+  /* Scene 8 — 59 Balls */
+  .s8 {
+    background: #0d0d1a;
+    padding: 0;
+    overflow: hidden;
+  }
+  .balls-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+  .tiny-ball {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bangers', cursive;
+    color: #fff;
+    font-weight: 900;
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4), inset 1px 1px 4px rgba(255,255,255,0.25);
+    position: relative;
+    animation: ballAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    flex-shrink: 0;
+  }
+  .tiny-ball::after {
+    content: '';
+    position: absolute;
+    top: 15%; left: 20%;
+    width: 28%; height: 18%;
+    background: rgba(255,255,255,0.35);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+  }
+  .s8-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(13,13,26,0.95) 85%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 30px;
+    z-index: 2;
+  }
+  .s8-title {
+    font-family: 'Bangers', cursive;
+    font-size: 2.5rem;
+    color: #f5c842;
+    letter-spacing: 4px;
+    text-align: center;
+    text-shadow: 3px 3px 0 #ff006e;
+    animation: s1pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+    line-height: 1;
+  }
+  .s8-sub {
+    font-family: 'Bangers', cursive;
+    font-size: 1.2rem;
+    color: #fff;
+    letter-spacing: 5px;
+    margin-top: 6px;
+    animation: fadeUp 0.4s 0.8s ease both;
+    opacity: 0;
+  }
+  @keyframes ballAppear {
+    from { transform: scale(0) rotate(-180deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes s1pop {
+    from { transform: scale(0.3); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes fadeUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes slideIn {
+    from { transform: translateX(-30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-5deg) scale(1); }
+    50% { transform: rotate(5deg) scale(1.1); }
+  }
+  @keyframes spin {
+    from { transform: rotate(-20deg) scale(0.5); opacity: 0; }
+    to { transform: rotate(0deg) scale(1); opacity: 1; }
+  }
+  @keyframes ballDrop {
+    from { transform: translateY(-60px) scale(0.5); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <button class="ctrl-btn play" onclick="playAdvert()">▶️ Play Advert</button>
+  <button class="ctrl-btn restart" onclick="restartAdvert()">🔄 Restart</button>
+</div>
+
+<div class="advert" id="advert">
+
+  <!-- Progress bar -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Scene counter -->
+  <div id="sceneCounter" style="position:absolute;top:12px;left:12px;z-index:10;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:800;color:rgba(255,255,255,0.7);letter-spacing:1px">
+    PAGE <span id="sceneNum">1</span> OF 8
+  </div>
+
+  <!-- Tap hint -->
+  <div id="tapHint" style="position:absolute;bottom:16px;right:16px;z-index:10;font-size:0.7rem;color:rgba(255,255,255,0.4);font-weight:700">TAP TO SKIP ▶</div>
+
+  <!-- Scene dots -->
+  <div class="scene-dots">
+    <div class="sdot" id="dot0"></div>
+    <div class="sdot" id="dot1"></div>
+    <div class="sdot" id="dot2"></div>
+    <div class="sdot" id="dot3"></div>
+    <div class="sdot" id="dot4"></div>
+    <div class="sdot" id="dot5"></div>
+    <div class="sdot" id="dot6"></div>
+    <div class="sdot active" id="dot7"></div>
+  </div>
+
+  <!-- Scene 8: 59 Balls -->
+  <div class="scene s8 active" id="scene7">
+    <div class="balls-container" id="ballsContainer">
+      <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:0.0s" id="tball1"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:0.06s" id="tball2"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:0.12s" id="tball3"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:0.18s" id="tball4"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:0.24s" id="tball5"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:0.3s" id="tball6"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:0.36s" id="tball7"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:0.42s" id="tball8"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:0.48s" id="tball9"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:0.54s" id="tball10"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:0.6s" id="tball11"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:0.66s" id="tball12"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:0.72s" id="tball13"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:0.78s" id="tball14"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:0.84s" id="tball15"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:0.9s" id="tball16"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:0.96s" id="tball17"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:1.02s" id="tball18"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:1.08s" id="tball19"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:1.14s" id="tball20"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:1.2s" id="tball21"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:1.26s" id="tball22"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:1.32s" id="tball23"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:1.38s" id="tball24"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:1.44s" id="tball25"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:1.5s" id="tball26"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:1.56s" id="tball27"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:1.62s" id="tball28"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:1.68s" id="tball29"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:1.74s" id="tball30"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:1.8s" id="tball31"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:1.86s" id="tball32"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:1.92s" id="tball33"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:1.98s" id="tball34"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:2.04s" id="tball35"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:2.1s" id="tball36"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:2.16s" id="tball37"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:2.22s" id="tball38"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:2.28s" id="tball39"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:2.34s" id="tball40"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:2.4s" id="tball41"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:2.46s" id="tball42"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:2.52s" id="tball43"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:2.58s" id="tball44"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:2.64s" id="tball45"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:2.7s" id="tball46"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:2.76s" id="tball47"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:2.82s" id="tball48"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:2.88s" id="tball49"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:2.94s" id="tball50"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:3.0s" id="tball51"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:3.06s" id="tball52"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:3.12s" id="tball53"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #cc5de8, #8338ec);animation-delay:3.18s" id="tball54"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e);animation-delay:3.24s" id="tball55"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffa94d, #fb5607);animation-delay:3.3s" id="tball56"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #ffe066, #e6a800);animation-delay:3.36s" id="tball57"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #69db7c, #2f9e44);animation-delay:3.42s" id="tball58"></div>
+    <div class="tiny-ball" style="background:radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff);animation-delay:3.48s" id="tball59"></div>
+    
+    </div>
+    <div class="s8-overlay">
+      <div class="s8-title">BARLOWS<br>BINGO!</div>
+      <div class="s8-sub">LOTTERY 🎱</div>
+    </div>
+  </div>
+
+  <!-- Scene 1: Hook -->
+  <div class="scene s1" id="scene0">
+    <div class="s1-balls-bg" id="s1BallsBg"></div>
+    <div class="s1-content">
+      <div class="s1-emoji">🤑</div>
+      <div class="s1-question">FANCY<br>WINNING<br>SOME CASH?</div>
+      <div class="s1-sub">Of course you do...<br>who doesn't?! 😄</div>
+    </div>
+  </div>
+
+  <!-- Scene 2: Intro -->
+  <div class="scene s2" id="scene1">
+    <div class="s2-title">BARLOWS<br>BINGO</div>
+    <div class="s2-sub">LOTTERY 🎱</div>
+    <div class="balls-anim" id="latestDrawBalls">
+      <div class="aball" id="lb1">?</div>
+      <div class="aball" id="lb2">?</div>
+      <div class="aball" id="lb3">?</div>
+      <div class="aball" id="lb4">?</div>
+      <div class="aball" id="lb5">?</div>
+      <div class="aball" id="lb6">?</div>
+    </div>
+    <div style="margin-top:8px;font-size:0.72rem;color:rgba(255,255,255,0.4);font-weight:700;text-align:center;letter-spacing:1px" id="latestDrawDate">FETCHING LATEST DRAW...</div>
+    <div style="margin-top:6px;font-size:0.85rem;color:rgba(255,255,255,0.6);font-weight:700;text-align:center;animation:fadeUp 0.4s 0.8s ease both;opacity:0">
+      The lottery game that's taking Barlows by storm! 🌪️
+    </div>
+  </div>
+
+  <!-- Scene 3: How it works -->
+  <div class="scene s3" id="scene2">
+    <div class="s3-title">HERE'S HOW IT WORKS 👇</div>
+    <div class="step-item">
+      <div class="step-circle">1</div>
+      <div class="step-text">Pick <span>6 lucky numbers</span> from 1 to 59</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">2</div>
+      <div class="step-text">Pay just <span>£2.50</span> per entry — easy!</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">3</div>
+      <div class="step-text">Every <span>Wednesday & Saturday</span> Lotto draw, your numbers get ticked off ✅</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">4</div>
+      <div class="step-text"><span>First to match all 6</span> numbers takes home the pot! 🏆</div>
+    </div>
+  </div>
+
+  <!-- Scene 4: Prize -->
+  <div class="scene s4" id="scene3">
+    <div class="coins">💰</div>
+    <div class="s4-label">YOU COULD WIN...</div>
+    <div class="s4-prize">50%<br>OF THE<br>POT!</div>
+    <div class="s4-sub">The more people enter,<br>the BIGGER the prize gets! 🤯</div>
+    <div class="s4-charity">❤️ The other <span>50%</span> goes towards a<br><span>life-saving defibrillator</span> for Barlows!</div>
+  </div>
+
+  <!-- Scene 6: Live Leaderboard -->
+  <div class="scene s6" id="scene5">
+    <div class="s6-title">🏆 TOP 10 LEADERBOARD</div>
+    <div class="s6-sub">LIVE FROM FIREBASE — WHO'S CLOSEST TO WINNING?</div>
+    <div id="advertLeaderboard" style="width:100%">
+      <div class="lb-loading">⏳ Loading live data...</div>
+    </div>
+    <div style="width:100%;text-align:center;margin-top:10px;animation:fadeUp 0.4s 0.6s ease both;opacity:0">
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);font-weight:700">🌐 graceful-swan-d0c3cd.netlify.app</div>
+    </div>
+  </div>
+
+  <!-- Scene 5: CTA -->
+  <div class="scene s5" id="scene4">
+    <div class="s5-title">WHAT ARE<br>YOU<br>WAITING FOR?!</div>
+    <div class="s5-price">JUST £2.50 🎉</div>
+    <div class="s5-url">graceful-swan-d0c3cd.netlify.app</div>
+    <div class="s5-qr">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://graceful-swan-d0c3cd.netlify.app" width="100" height="100" alt="QR" />
+    </div>
+    <div class="s5-scan">📱 Scan to enter now!</div>
+    <div class="s5-date">🗓️ FIRST DRAW 28TH MARCH!</div>
+  </div>
+
+  <!-- Scene 7: Countdown -->
+  <div class="scene s7" id="scene6">
+    <div class="s7-fire">🚀</div>
+    <div class="s7-title">FIRST DRAW<br>COUNTDOWN!</div>
+    <div class="s7-sub">SATURDAY 28TH MARCH 2026</div>
+    <div class="s7-grid">
+      <div class="s7-box"><span class="s7-num" id="adDays">00</span><span class="s7-label">Days</span></div>
+      <div class="s7-box"><span class="s7-num" id="adHours">00</span><span class="s7-label">Hours</span></div>
+      <div class="s7-box"><span class="s7-num" id="adMins">00</span><span class="s7-label">Minutes</span></div>
+      <div class="s7-box"><span class="s7-num" id="adSecs">00</span><span class="s7-label">Seconds</span></div>
+    </div>
+    <div class="s7-date">📅 DON'T MISS OUT — ENTER NOW!</div>
+    <div style="margin-top:12px;font-size:0.78rem;color:#f5c842;font-weight:900;text-align:center;animation:fadeUp 0.4s 0.6s ease both">
+      graceful-swan-d0c3cd.netlify.app
+    </div>
+  </div>
+
+</div>
+
+<script>
+var currentScene = 7;
+var totalScenes = 8;
+var timer = null;
+var progressTimer = null;
+var sceneDurations = [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]; // 10 seconds per scene
+var playing = false;
+
+function showScene(index) {
+  // Handle bouncing balls scene
+  if(index !== 7) { stopBouncing(); }
+  document.querySelectorAll('.scene').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.sdot').forEach(function(d){ d.classList.remove('active'); });
+  document.getElementById('scene' + index).classList.add('active');
+  document.getElementById('dot' + index).classList.add('active');
+  currentScene = index;
+  document.getElementById('sceneNum').textContent = index + 1;
+  if(index === 7) { startBouncingScene(); }
+
+  // Animate progress bar
+  var bar = document.getElementById('progressBar');
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  setTimeout(function() {
+    bar.style.transition = 'width ' + sceneDurations[index] + 'ms linear';
+    bar.style.width = '100%';
+  }, 50);
+}
+
+function nextScene() {
+  var next = (currentScene + 1) % totalScenes;
+  showScene(next);
+  scheduleNext();
+}
+
+function scheduleNext() {
+  clearTimeout(timer);
+  timer = setTimeout(nextScene, sceneDurations[currentScene]);
+}
+
+function playAdvert() {
+  if(playing) {
+    // Pause
+    clearTimeout(timer);
+    playing = false;
+    document.querySelector('.ctrl-btn.play').textContent = '▶️ Resume';
+  } else {
+    // Play
+    playing = true;
+    document.querySelector('.ctrl-btn.play').textContent = '⏸️ Pause';
+    showScene(currentScene);
+    scheduleNext();
+  }
+}
+
+function restartAdvert() {
+  clearTimeout(timer);
+  playing = false;
+  currentScene = 0;
+  document.querySelector('.ctrl-btn.play').textContent = '⏸️ Pause';
+  document.getElementById('progressBar').style.width = '0%';
+  showScene(0);
+}
+
+// Tap to advance
+document.getElementById('advert').addEventListener('click', function() {
+  if(playing) {
+    clearTimeout(timer);
+    nextScene();
+  }
+});
+
+// Auto-start after a moment
+setTimeout(playAdvert, 500);
+
+// Scene 1 bouncing background balls
+var s1BallsPhysics = [];
+var s1BallsInterval = null;
+var s1BallColors = [
+  'radial-gradient(circle at 35% 35%, #ff6b6b, #ff006e)',
+  'radial-gradient(circle at 35% 35%, #ffa94d, #fb5607)',
+  'radial-gradient(circle at 35% 35%, #ffe066, #e6a800)',
+  'radial-gradient(circle at 35% 35%, #69db7c, #2f9e44)',
+  'radial-gradient(circle at 35% 35%, #74c0fc, #3a86ff)',
+  'radial-gradient(circle at 35% 35%, #cc5de8, #8338ec)'
+];
+
+function initS1Balls() {
+  var container = document.getElementById('s1BallsBg');
+  if(!container) return;
+  container.innerHTML = '';
+  s1BallsPhysics = [];
+  var w = container.offsetWidth || 320;
+  var h = container.offsetHeight || 568;
+  var ballSize = 48;
+  var radius = ballSize / 2;
+  var count = 12;
+
+  for(var i = 0; i < count; i++) {
+    var el = document.createElement('div');
+    el.className = 'bg-ball';
+    el.style.width = ballSize + 'px';
+    el.style.height = ballSize + 'px';
+    el.style.fontSize = '14px';
+    el.style.background = s1BallColors[i % 6];
+    el.textContent = Math.floor(Math.random() * 59) + 1;
+    container.appendChild(el);
+
+    s1BallsPhysics.push({
+      el: el,
+      x: radius + Math.random() * (w - ballSize),
+      y: radius + Math.random() * (h - ballSize),
+      vx: (Math.random() - 0.5) * 5,
+      vy: (Math.random() - 0.5) * 5,
+      r: radius
+    });
+  }
+
+  if(s1BallsInterval) clearInterval(s1BallsInterval);
+  s1BallsInterval = setInterval(function() {
+    var w2 = container.offsetWidth || 320;
+    var h2 = container.offsetHeight || 568;
+    s1BallsPhysics.forEach(function(b) {
+      b.x += b.vx;
+      b.y += b.vy;
+      if(b.x - b.r < 0) { b.x = b.r; b.vx = Math.abs(b.vx); }
+      if(b.x + b.r > w2) { b.x = w2 - b.r; b.vx = -Math.abs(b.vx); }
+      if(b.y - b.r < 0) { b.y = b.r; b.vy = Math.abs(b.vy); }
+      if(b.y + b.r > h2) { b.y = h2 - b.r; b.vy = -Math.abs(b.vy); }
+      b.el.style.left = (b.x - b.r) + 'px';
+      b.el.style.top = (b.y - b.r) + 'px';
+    });
+  }, 16);
+}
+
+function stopS1Balls() {
+  if(s1BallsInterval) { clearInterval(s1BallsInterval); s1BallsInterval = null; }
+}
+
+// Hook into showScene for s1 balls
+var _origShowScene2 = showScene;
+showScene = function(index) {
+  if(index === 0) { setTimeout(initS1Balls, 200); }
+  else { stopS1Balls(); }
+  _origShowScene2(index);
+};
+
+// Fetch latest Lotto draw numbers
+async function fetchLatestDrawNumbers() {
+  try {
+    var apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.national-lottery.co.uk/results/lotto/draw-history/csv');
+    var resp = await fetch(apiUrl);
+    var data = await resp.json();
+    if(!data.contents) throw new Error('No data');
+
+    var lines = data.contents.trim().split('\n');
+    var header = lines[0].split(',').map(function(h){ return h.trim().replace(/"/g,''); });
+    var drawDateIdx = header.findIndex(function(h){ return h.toLowerCase().includes('drawdate') || h.toLowerCase().includes('draw date') || h.toLowerCase() === 'date'; });
+    var ball1Idx = header.findIndex(function(h){ return h.toLowerCase() === 'ball 1' || h.toLowerCase() === 'ball1'; });
+
+    if(ball1Idx === -1) throw new Error('Format changed');
+
+    var latest = lines[1].split(',').map(function(v){ return v.trim().replace(/"/g,''); });
+    var drawDateRaw = latest[drawDateIdx];
+    var balls = [latest[ball1Idx],latest[ball1Idx+1],latest[ball1Idx+2],latest[ball1Idx+3],latest[ball1Idx+4],latest[ball1Idx+5]].map(Number);
+
+    if(balls.some(isNaN)) throw new Error('Could not parse');
+
+    // Update the balls on scene 1
+    balls.forEach(function(n, i) {
+      var el = document.getElementById('lb' + (i+1));
+      if(el) el.textContent = n;
+    });
+
+    // Format date nicely
+    var dateEl = document.getElementById('latestDrawDate');
+    if(dateEl) {
+      var d = new Date(drawDateRaw);
+      var dateStr = isNaN(d) ? drawDateRaw : d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+      dateEl.textContent = '🎱 LATEST DRAW: ' + dateStr.toUpperCase();
+      dateEl.style.color = 'rgba(245,200,66,0.7)';
+    }
+  } catch(err) {
+    // Fallback to placeholder numbers
+    [7,14,23,38,45,59].forEach(function(n,i){
+      var el = document.getElementById('lb'+(i+1));
+      if(el) el.textContent = n;
+    });
+    var dateEl = document.getElementById('latestDrawDate');
+    if(dateEl) dateEl.textContent = '🎱 LATEST DRAW NUMBERS';
+  }
+}
+fetchLatestDrawNumbers();
+
+// Fetch live leaderboard from Firebase
+async function loadLeaderboard() {
+  try {
+    var projectId = 'barlows-bingo';
+    var apiKey = 'AIzaSyDfBvY0EzUYO-3iTZIdcQXDbkOzH8nHJ-k';
+    var url = 'https://firestore.googleapis.com/v1/projects/' + projectId + '/databases/(default)/documents/entries?key=' + apiKey + '&pageSize=100';
+    var resp = await fetch(url);
+    var data = await resp.json();
+
+    if(!data.documents || data.documents.length === 0) {
+      document.getElementById('advertLeaderboard').innerHTML = '<div class="lb-loading">No entries yet — be the first! 🎱</div>';
+      return;
+    }
+
+    // Parse and sort by hits
+    var entries = data.documents.map(function(d) {
+      var f = d.fields;
+      var hits = f.hits && f.hits.arrayValue && f.hits.arrayValue.values ? f.hits.arrayValue.values.length : 0;
+      return {
+        name: f.name ? f.name.stringValue : 'Unknown',
+        hits: hits,
+        won: f.won ? f.won.booleanValue : false
+      };
+    });
+
+    entries.sort(function(a,b){ return b.hits - a.hits; });
+    var top10 = entries.slice(0, 10);
+
+    var medals = ['🥇','🥈','🥉'];
+    var html = top10.map(function(e, i) {
+      var pct = (e.hits / 6) * 100;
+      var rank = e.won ? '👑' : (medals[i] || (i+1));
+      var nameShort = e.name.length > 16 ? e.name.substring(0,14) + '..' : e.name;
+      return '<div class="lb-row">' +
+        '<div class="lb-rank" style="color:' + (i===0?'#f5c842':i===1?'#bdc3c7':i===2?'#cd7f32':'#8b949e') + '">' + rank + '</div>' +
+        '<div class="lb-name">' + nameShort + '</div>' +
+        '<div class="lb-progress"><div class="lb-bar-wrap"><div class="lb-bar" style="width:' + pct + '%"></div></div></div>' +
+        '<div class="lb-score">' + e.hits + '/6</div>' +
+      '</div>';
+    }).join('');
+
+    document.getElementById('advertLeaderboard').innerHTML = html;
+  } catch(err) {
+    document.getElementById('advertLeaderboard').innerHTML = '<div class="lb-loading">Could not load — check connection 📡</div>';
+  }
+}
+
+
+// Advert countdown timer
+function updateAdvertCountdown() {
+  var target = new Date('2026-03-28T19:30:00');
+  var now = new Date();
+  var diff = target - now;
+  if(diff <= 0) {
+    document.getElementById('adDays').textContent = '00';
+    document.getElementById('adHours').textContent = '00';
+    document.getElementById('adMins').textContent = '00';
+    document.getElementById('adSecs').textContent = '00';
+    return;
+  }
+  document.getElementById('adDays').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('adHours').textContent = String(Math.floor((diff%(1000*60*60*24))/(1000*60*60))).padStart(2,'0');
+  document.getElementById('adMins').textContent = String(Math.floor((diff%(1000*60*60))/(1000*60))).padStart(2,'0');
+  document.getElementById('adSecs').textContent = String(Math.floor((diff%(1000*60))/1000)).padStart(2,'0');
+}
+updateAdvertCountdown();
+setInterval(updateAdvertCountdown, 1000);
+
+// Bouncing balls physics
+var ballsPhysics = [];
+var bounceAnimFrame = null;
+var ballsReady = false;
+
+function initBalls() {
+  var container = document.getElementById('ballsContainer');
+  if(!container) return;
+  var w = container.offsetWidth;
+  var h = container.offsetHeight;
+  var cols = 9;
+  var ballSize = Math.floor(w / cols) - 1;
+  var fontSize = Math.floor(ballSize * 0.35);
+  var radius = ballSize / 2;
+
+  // Position balls in a grid first
+  var balls = document.querySelectorAll('.tiny-ball');
+  balls.forEach(function(b, idx) {
+    b.style.width = ballSize + 'px';
+    b.style.height = ballSize + 'px';
+    b.style.fontSize = fontSize + 'px';
+    b.style.position = 'absolute';
+    b.style.borderRadius = '50%';
+    b.style.animation = 'ballAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both';
+    b.style.animationDelay = (idx * 0.06) + 's';
+    b.textContent = idx + 1;
+    var col = idx % cols;
+    var row = Math.floor(idx / cols);
+    b.style.left = (col * (ballSize + 1)) + 'px';
+    b.style.top = (row * (ballSize + 1)) + 'px';
+  });
+
+  // After all balls appear, start bouncing
+  setTimeout(function() {
+    // Switch container to relative positioning
+    container.style.flexWrap = 'nowrap';
+
+    // Initialize physics for each ball
+    ballsPhysics = [];
+    balls.forEach(function(b, idx) {
+      var col = idx % cols;
+      var row = Math.floor(idx / cols);
+      ballsPhysics.push({
+        el: b,
+        x: col * (ballSize + 1),
+        y: row * (ballSize + 1),
+        vx: (Math.random() - 0.5) * 6,
+        vy: (Math.random() - 0.5) * 6,
+        r: radius
+      });
+      b.style.animation = 'none';
+      b.style.transform = 'none';
+    });
+
+    ballsReady = true;
+    bounceAnimFrame = setInterval(bounceBalls, 16); // ~60fps using interval not rAF
+  }, 59 * 60 + 800); // Wait for all balls to appear
+}
+
+function bounceBalls() {
+  var container = document.getElementById('ballsContainer');
+  if(!container || !ballsReady) return;
+  var w = container.offsetWidth;
+  var h = container.offsetHeight;
+
+  ballsPhysics.forEach(function(b) {
+    b.x += b.vx;
+    b.y += b.vy;
+    if(b.x - b.r < 0) { b.x = b.r; b.vx = Math.abs(b.vx); }
+    if(b.x + b.r > w) { b.x = w - b.r; b.vx = -Math.abs(b.vx); }
+    if(b.y - b.r < 0) { b.y = b.r; b.vy = Math.abs(b.vy); }
+    if(b.y + b.r > h) { b.y = h - b.r; b.vy = -Math.abs(b.vy); }
+    b.el.style.left = (b.x - b.r) + 'px';
+    b.el.style.top = (b.y - b.r) + 'px';
+  });
+}
+
+// Stop bouncing when scene changes - hook into showScene via a flag
+function stopBouncing() {
+  if(bounceAnimFrame) {
+    clearInterval(bounceAnimFrame);
+    bounceAnimFrame = null;
+    ballsReady = false;
+  }
+}
+
+function startBouncingScene() {
+  ballsReady = false;
+  setTimeout(initBalls, 100);
+}
+
+setTimeout(initBalls, 100);
+window.addEventListener('resize', function() { if(document.getElementById('scene7').classList.contains('active')) initBalls(); });
+
+
+
+loadLeaderboard();
+</script>
+</body>
+</html>
